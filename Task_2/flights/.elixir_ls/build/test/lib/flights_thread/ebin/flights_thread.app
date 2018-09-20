@@ -1,0 +1,11 @@
+{application,flights_thread,
+             [{applications,[kernel,stdlib,elixir,logger,mnesia,elixir_uuid,
+                             mutex,benchee]},
+              {description,"flights_thread"},
+              {modules,['Elixir.FlightsDatabase','Elixir.FlightsThread']},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.FlightsThread',[]}},
+              {start_phases,[{create_schema,[]},
+                             {search_flights,{<<"BOG">>,<<"MAD">>}},
+                             {stop,[3]}]}]}.
