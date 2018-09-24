@@ -7,7 +7,7 @@ defmodule FlightsCSP do
 
   def start_phase(:create_schema, _, _) do
     # _ = Application.stop(Mnesia)
-    file = Application.app_dir(:flights_thread, "priv/flights")
+    file = Application.app_dir(:flights_csp, "priv/flights")
     {:ok, pid} = FlightsDatabase.start_link(file)
     # :erlang.register(arg1, arg2)
     Process.register(pid, :flight_server)
