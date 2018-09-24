@@ -1,0 +1,11 @@
+{application,flights_stm,
+             [{applications,[kernel,stdlib,elixir,logger,mnesia,elixir_uuid,
+                             benchee]},
+              {description,"flights_stm"},
+              {modules,['Elixir.FlightsStm']},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.FlightsStm',[]}},
+              {start_phases,[{create_schema,[]},
+                             {search_flights,{<<"BOG">>,<<"MAD">>}},
+                             {stop,[3]}]}]}.

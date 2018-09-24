@@ -1,0 +1,11 @@
+{application,flights_csp,
+             [{applications,[kernel,stdlib,elixir,logger,mnesia,elixir_uuid,
+                             cspex,benchee]},
+              {description,"flights_csp"},
+              {modules,['Elixir.FlightsCSP','Elixir.FlightsDatabase']},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.FlightsCSP',[]}},
+              {start_phases,[{create_schema,[]},
+                             {search_flights,{<<"BOG">>,<<"MAD">>}},
+                             {stop,[3]}]}]}.

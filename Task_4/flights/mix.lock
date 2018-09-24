@@ -1,0 +1,6 @@
+%{
+  "benchee": {:hex, :benchee, "0.13.2", "30cd4ff5f593fdd218a9b26f3c24d580274f297d88ad43383afe525b1543b165", [:mix], [{:deep_merge, "~> 0.1", [hex: :deep_merge, repo: "hexpm", optional: false]}], "hexpm"},
+  "cspex": {:hex, :cspex, "1.1.0", "0cd30aef0495e098a014fa9c62d317f3bc7ac7b7ff235b4aad5f27e331ecb52a", [:mix], [], "hexpm"},
+  "deep_merge": {:hex, :deep_merge, "0.2.0", "c1050fa2edf4848b9f556fba1b75afc66608a4219659e3311d9c9427b5b680b3", [:mix], [], "hexpm"},
+  "elixir_uuid": {:hex, :elixir_uuid, "1.2.0", "ff26e938f95830b1db152cb6e594d711c10c02c6391236900ddd070a6b01271d", [:mix], [], "hexpm"},
+}
