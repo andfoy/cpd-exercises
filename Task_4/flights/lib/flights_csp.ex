@@ -30,17 +30,17 @@ defmodule FlightsCSP do
 
   def search_flights(from_code, to_code) do
     server = Process.whereis(:flight_server)
-    GenServer.call(server, {:search_flights, from_code, to_code})
+    GenServer.call(server, {:search_flights, from_code, to_code}, :infinity)
   end
 
   def reserve_flight(id, date) do
     server = Process.whereis(:flight_server)
-    GenServer.call(server, {:reserve_flight, id, date})
+    GenServer.call(server, {:reserve_flight, id, date}, :infinity)
   end
 
   def random_flight() do
     server = Process.whereis(:flight_server)
-    GenServer.call(server, :random_flight)
+    GenServer.call(server, :random_flight, :infinity)
   end
 
   def start(_, _) do
