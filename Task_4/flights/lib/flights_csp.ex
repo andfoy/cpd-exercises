@@ -88,15 +88,18 @@ defmodule FlightsCSP do
   end
 
   def concurrent_write_test(nprocs) do
+    children = [
+      worker(Channel, [[name: MyApp.Channel, buffer_size: 1]])
+    ]
+    {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
     [id, _, _, _, _, _, _, _, _, _] = random_flight()
     {:ok, date} = {2018, :rand.uniform(9) + 2, :rand.uniform(30)}
                   |> Date.from_erl()
     date = Date.to_iso8601(date)
-    channel = Channel.new
     Benchee.run(%{"concurrent write test" => fn ->
-      Channel.put(channel, :write)
+      Channel.put(MyApp.Channel, :write)
       concurrent_write(id, date)
-      Channel.get(channel)
+      Channel.get(MyApp.Channel)
     end}, memory_time: 2, parallel: nprocs)
   end
 
