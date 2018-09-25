@@ -2,6 +2,7 @@ defmodule FlightsCSP do
   @moduledoc """
   Documentation for FlightsStm.
   """
+  import Supervisor.Spec
   use Application
   use CSP
 
@@ -69,11 +70,15 @@ defmodule FlightsCSP do
   end
 
   def random_write_test(nprocs) do
-    channel = Channel.new
+    children = [
+      worker(Channel, [[name: MyApp.Channel, buffer_size: 1]])
+    ]
+    {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
+    # channel = Channel.new
     Benchee.run(%{"random write test" => fn ->
-      Channel.put(channel, :write)
+      Channel.put(MyApp.Channel, :write)
       random_write()
-      Channel.get(channel)
+      Channel.get(MyApp.Channel)
     end}, memory_time: 2, parallel: nprocs)
   end
 
