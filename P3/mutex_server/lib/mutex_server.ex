@@ -5,11 +5,20 @@ defmodule MutexServer do
     Process.register(self(), :mutex)
     case Node.self() == @coordinator do
       :true -> coordinate(:nil, :queue.new)
-      _ -> process()
+      :false ->
+        wait_for_coordinator()
+        process()
     end
   end
 
-  def process() do
+  defp wait_for_coordinator() do
+    case Node.ping(@coordinator) do
+      :pang -> wait_for_coordinator()
+      :pong -> :ok
+    end
+  end
+
+  defp process() do
     case :rand.uniform(16) > 8 do
       :true -> send({:mutex, @coordinator}, {:adquire, Node.self()})
     end
@@ -18,7 +27,7 @@ defmodule MutexServer do
     end
   end
 
-  def coordinate(current_owner, queue) do
+  defp coordinate(current_owner, queue) do
     receive do
       {:adquire, node} ->
         Node.monitor(node, :true)

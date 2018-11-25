@@ -8,6 +8,7 @@ defmodule MutexServer.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Task, fn -> MutexServer.start end}
       # Starts a worker by calling: MutexServer.Worker.start_link(arg)
       # {MutexServer.Worker, arg},
     ]
