@@ -7,7 +7,7 @@ defmodule MutexServer do
       :true -> coordinate(:nil, :queue.new)
       :false ->
         wait_for_coordinator()
-        process()
+        process(:false)
     end
   end
 
@@ -18,46 +18,73 @@ defmodule MutexServer do
     end
   end
 
-  defp process() do
+  defp process(has_lock) when has_lock do
     case :rand.uniform(16) > 8 do
-      :true -> send({:mutex, @coordinator}, {:adquire, Node.self()})
+      :true ->
+        send({:mutex, @coordinator}, {:release, Node.self()})
+        receive do
+          {:ok, :release} -> process(:false)
+        end
+      :false -> process(has_lock)
     end
-    receive do
-      {:ok, :lease} -> process()
+  end
+
+  defp process(has_lock) when not has_lock do
+    case :rand.uniform(16) > 8 do
+      :true ->
+        send({:mutex, @coordinator}, {:adquire, Node.self()})
+        receive do
+          {:ok, :lease} -> process(:true)
+        end
+      :false -> process(has_lock)
     end
   end
 
   defp coordinate(current_owner, queue) do
+    # :logger.info("Coordinator #{@coordinator} is waiting for messages")
     receive do
       {:adquire, node} ->
+        :logger.info("Node #{node} wants to adquire lock")
         Node.monitor(node, :true)
         if match?(^current_owner, node) do
+          :logger.info("Node #{node} has already adquired the lock")
           coordinate(current_owner, queue)
         else
           case current_owner do
             :nil ->
+              :logger.info("Node #{node} is adquiring the lock")
               send({:mutex, node}, {:ok, :lease})
               coordinate(node, queue)
             _ ->
+              :logger.info("Node #{node} must wait")
               queue = :queue.in(node, queue)
               coordinate(node, queue)
           end
         end
       {:release, node} ->
+        :logger.info("Node #{node} is releasing the lock")
+        send({:mutex, node}, {:ok, :release})
         Node.monitor(node, :false)
         case :queue.out(queue) do
           {{:value, qnode}, queue} ->
+            Node.monitor(qnode, :true)
+            :logger.info("Node #{qnode} is adquiring the lock")
             send({:mutex, qnode}, {:ok, :lease})
             coordinate(node, queue)
           {:empty, queue} ->
+            :logger.info("Queue is empty")
             coordinate(:nil, queue)
         end
       {:nodedown, node} ->
+        :logger.info("Node #{node} is down!")
         case :queue.out(queue) do
           {{:value, qnode}, queue} ->
+            Node.monitor(qnode, :true)
+            :logger.info("Node #{qnode} is adquiring the lock")
             send({:mutex, qnode}, {:ok, :lease})
             coordinate(node, queue)
           {:empty, queue} ->
+            :logger.info("Queue is empty")
             coordinate(:nil, queue)
         end
     end
