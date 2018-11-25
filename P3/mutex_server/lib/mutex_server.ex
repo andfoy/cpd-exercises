@@ -26,6 +26,8 @@ defmodule MutexServer do
         send({:mutex, @coordinator}, {:release, Node.self()})
         receive do
           {:ok, :release} -> process(:false)
+        after
+          1_000 -> process(:true)
         end
       :false -> process(has_lock)
     end
@@ -38,6 +40,8 @@ defmodule MutexServer do
         send({:mutex, @coordinator}, {:adquire, Node.self()})
         receive do
           {:ok, :lease} -> process(:true)
+        after
+          1_000 -> process(:false)
         end
       :false -> process(has_lock)
     end
