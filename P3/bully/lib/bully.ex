@@ -20,8 +20,11 @@ defmodule Bully do
   end
 
   defp connect() do
-    Enum.map(@node_ranks, fn {k, _} -> Node.ping(k) end)
-  end
+    alive_nodes = Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
+    if length(alive_nodes) == 0 do
+      connect()
+    end
+end
 
   def start() do
     Process.register(self(), :bully)
