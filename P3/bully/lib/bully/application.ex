@@ -6,12 +6,12 @@ defmodule Bully.Application do
   use Application
 
   def start(_type, _args) do
-    rank = String.to_integer(System.get_env("RANK"))
+    # rank = String.to_integer(System.get_env("RANK"))
     # List all child processes to be supervised
     children = [
       # Starts a worker by calling: Bully.Worker.start_link(arg)
       # {Bully.Worker, arg},
-      {Task, fn -> Bully.start(rank) end}
+      {Task, fn -> Bully.start end}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
