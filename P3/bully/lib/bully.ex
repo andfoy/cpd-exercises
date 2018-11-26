@@ -30,7 +30,7 @@ end
     Process.register(self(), :bully)
     rank = Map.get(@node_ranks, Node.self())
     :logger.info("Node #{Node.self()} is starting with rank #{rank}")
-    # connect()
+    connect()
     # Announce rank to all available nodes larger than mine
     :logger.info("Announcing elections")
     nodes = larger_nodes()
