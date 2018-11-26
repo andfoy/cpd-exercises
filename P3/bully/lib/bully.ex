@@ -21,7 +21,7 @@ defmodule Bully do
 
   defp connect() do
     Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
-    if length(Node.list) > 1 do
+    if length(Node.list) > 0 do
       connect()
     end
 end
