@@ -73,6 +73,7 @@ end
     rank = Map.get(@node_ranks, Node.self())
     max_alive_rank = Enum.reduce(Node.list,
                       fn x, acc -> max(Map.get(@node_ranks, x), acc) end)
+    :logger.info("Max Rank: #{max_alive_rank}")
     if rank == max_alive_rank do
       :logger.info("I shall be coordinator")
       broadcast_message(Node.list, {:victory, Node.self()})
