@@ -21,8 +21,8 @@ defmodule Bully do
 
   defp connect() do
     :logger.info("Waiting for connections")
-    Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
-    if length(Node.list) > 0 do
+    Enum.map(@node_ranks, fn {node, _} -> Node.ping(node) end)
+    if length(Node.list) == 0 do
       connect()
     end
 end
