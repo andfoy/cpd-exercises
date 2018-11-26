@@ -30,10 +30,12 @@ end
     Process.register(self(), :bully)
     rank = Map.get(@node_ranks, Node.self())
     :logger.info("Node #{Node.self()} is starting with rank #{rank}")
+    :logger.info("Waiting for connections")
     connect()
     # Announce rank to all available nodes larger than mine
     :logger.info("Announcing elections")
     nodes = larger_nodes()
+    :logger.info("Larger Nodes: #{nodes}")
     Enum.map(
       nodes, fn n -> send({:bully, n}, {:election, Node.self()}) end)
     loop(Node.self(), :confirm_election)
