@@ -51,7 +51,9 @@ defmodule Bully do
         send({:bully, node}, {:election_ok, Node.self()})
         loop(coordinator, :confirm_election)
       after
-        1_000 -> broadcast_message(Node.list, {:victory, Node.self()})
+        1_000 ->
+          :logger.info("I shall be coordinator")
+          broadcast_message(Node.list, {:victory, Node.self()})
     end
   end
 
