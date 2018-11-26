@@ -21,7 +21,7 @@ defmodule Bully do
 
   defp connect() do
     alive_nodes = Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
-    if length(alive_nodes) == 1 do
+    if length(alive_nodes) > 1 do
       connect()
     end
 end
@@ -30,7 +30,7 @@ end
     Process.register(self(), :bully)
     rank = Map.get(@node_ranks, Node.self())
     :logger.info("Node #{Node.self()} is starting with rank #{rank}")
-    connect()
+    # connect()
     # Announce rank to all available nodes larger than mine
     :logger.info("Announcing elections")
     nodes = larger_nodes()
@@ -62,6 +62,7 @@ end
         1_000 ->
           :logger.info("I shall be coordinator")
           broadcast_message(Node.list, {:victory, Node.self()})
+          loop(Node.self, :ok)
     end
   end
 
