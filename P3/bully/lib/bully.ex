@@ -35,7 +35,7 @@ end
     # Announce rank to all available nodes larger than mine
     :logger.info("Announcing elections")
     nodes = larger_nodes()
-    :logger.info("Larger Nodes: #{nodes}")
+    :logger.info("Larger Nodes: #{inspect nodes}")
     Enum.map(
       nodes, fn n -> send({:bully, n}, {:election, Node.self()}) end)
     loop(Node.self(), :confirm_election)
