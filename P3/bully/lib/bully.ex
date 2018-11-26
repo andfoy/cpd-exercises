@@ -72,7 +72,7 @@ end
   defp loop(coordinator, :await_victory) do
     rank = Map.get(@node_ranks, Node.self())
     node_list = [Node.self() | Node.list]
-    max_alive_rank = Enum.reduce(node_list,
+    max_alive_rank = Enum.reduce(node_list, 0,
                       fn x, acc -> max(Map.get(@node_ranks, x), acc) end)
     :logger.info("Max Rank: #{max_alive_rank}")
     if rank == max_alive_rank do
