@@ -14,7 +14,7 @@ defmodule Bully do
     # sup_node = Enum.at(@node_list, rem(rank - 1, length(@node_list)))
     :logger.info("Waiting for node connections")
     alive_nodes = Enum.filter(@node_list, fn node -> Node.ping(node) == :pong end)
-    if length(alive_nodes) == 0 do
+    if length(alive_nodes) == 1 do
       connect()
     end
   end
