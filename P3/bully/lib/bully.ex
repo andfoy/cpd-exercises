@@ -20,8 +20,8 @@ defmodule Bully do
   end
 
   defp connect() do
-    alive_nodes = Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
-    if length(alive_nodes) > 1 do
+    Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
+    if length(Node.list) > 1 do
       connect()
     end
 end
