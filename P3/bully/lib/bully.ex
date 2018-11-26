@@ -37,13 +37,17 @@ defmodule Bully do
 
   defp loop(coordinator, :confirm_election) do
     # rank = Map.get(@node_ranks, Node.self())
+    :logger.info("Wait for confirmation")
     receive do
       {:election_ok, _} ->
+        :logger.info("Elections will take place")
         loop(coordinator, :await_victory)
       {:victory, node} ->
         Node.monitor(node, :true)
+        :logger.info("#{node} is the new coordinator")
         loop(node, :ok)
       {:election, node} ->
+        :logger.info("We're already on elections")
         send({:bully, node}, {:election_ok, Node.self()})
         loop(coordinator, :confirm_election)
       after
@@ -56,14 +60,17 @@ defmodule Bully do
     max_alive_rank = Enum.reduce(Node.list,
                       fn x, acc -> max(Map.get(@node_ranks, x), acc) end)
     if rank == max_alive_rank do
+      :logger.info("I shall be coordinator")
       broadcast_message(Node.list, {:victory, Node.self()})
       loop(Node.self, :ok)
     else
       receive do
         {:victory, node} ->
+          :logger.info("#{node} is the new coordinator")
           Node.monitor(node, :true)
           loop(node, :ok)
         {:election, node} ->
+          :logger.info("We're already on elections")
           send({:bully, node}, {:election_ok, Node.self()})
           loop(coordinator, :await_victory)
       end
@@ -73,12 +80,15 @@ defmodule Bully do
   defp loop(coordinator, :ok) do
     receive do
       {:nodedown, ^coordinator} ->
+        :logger.info("Coordinator #{coordinator} is down, calling for new elections")
         broadcast_message(larger_nodes(), {:election, Node.self()})
         loop(coordinator, :confirm_election)
       {:election, node} ->
+        :logger.info("Node #{node} has called for new elections")
         send({:bully, node}, {:election_ok, Node.self()})
         loop(coordinator, :await_victory)
       {:victory, node} ->
+        :logger.info("#{node} is the new coordinator")
         Node.monitor(node, :true)
         loop(node, :ok)
     end
