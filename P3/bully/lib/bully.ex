@@ -20,6 +20,7 @@ defmodule Bully do
   end
 
   defp connect() do
+    :logger.info("Waiting for connections")
     Enum.filter(@node_ranks, fn {node, _} -> Node.ping(node) == :pong end)
     if length(Node.list) > 0 do
       connect()
@@ -30,7 +31,7 @@ end
     Process.register(self(), :bully)
     rank = Map.get(@node_ranks, Node.self())
     :logger.info("Node #{Node.self()} is starting with rank #{rank}")
-    :logger.info("Waiting for connections")
+    # :logger.info("Waiting for connections")
     connect()
     # Announce rank to all available nodes larger than mine
     :logger.info("Announcing elections")
