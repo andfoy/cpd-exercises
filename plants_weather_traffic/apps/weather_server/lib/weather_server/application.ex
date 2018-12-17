@@ -10,6 +10,7 @@ defmodule WeatherServer.Application do
     children = [
       # Starts a worker by calling: WeatherServer.Worker.start_link(arg)
       # {WeatherServer.Worker, arg},
+      {WeatherServer, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
