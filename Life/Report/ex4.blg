@@ -1,0 +1,9 @@
+[0] Config.pm:302> INFO - This is Biber 2.9
+[0] Config.pm:305> INFO - Logfile is 'ex4.blg'
+[22] biber:313> INFO - === mié oct 10, 2018, 17:18:46
+[41] Biber.pm:371> INFO - Reading 'ex4.bcf'
+[89] Biber.pm:857> INFO - Found 0 citekeys in bib section 0
+[95] Utils.pm:169> WARN - The file 'ex4.bcf' does not contain any citations!
+[101] bbl.pm:617> INFO - Writing 'ex4.bbl' with encoding 'UTF-8'
+[101] bbl.pm:720> INFO - Output to ex4.bbl
+[101] Biber.pm:110> INFO - WARNINGS: 1
