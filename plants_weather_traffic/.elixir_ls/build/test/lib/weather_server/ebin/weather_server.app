@@ -1,8 +1,9 @@
 {application,weather_server,
-             [{applications,[kernel,stdlib,elixir,logger]},
+             [{applications,[kernel,stdlib,elixir,logger,mdns]},
               {description,"weather_server"},
               {modules,['Elixir.WeatherServer',
-                        'Elixir.WeatherServer.Application']},
+                        'Elixir.WeatherServer.Application',
+                        'Elixir.WeatherZMQ']},
               {registered,[]},
               {vsn,"0.1.0"},
               {mod,{'Elixir.WeatherServer.Application',[]}}]}.

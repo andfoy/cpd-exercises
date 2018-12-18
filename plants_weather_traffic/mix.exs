@@ -15,6 +15,8 @@ defmodule PlantsWeatherTraffic.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    [{:mdns, "~> 1.0"}]
+    [{:mdns, "~> 1.0"},
+     {:chumak, "~> 1.3"},
+     {:msgpack, "~> 0.7.0"}]
   end
 end

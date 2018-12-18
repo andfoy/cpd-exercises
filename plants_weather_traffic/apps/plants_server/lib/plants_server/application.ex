@@ -16,7 +16,8 @@ defmodule PlantsServer.Application do
       #   id: Mdns.Server,
       #   start: {Mdns.Server, :start_link, []}
       # },
-      {PlantsServer, []}
+      {Plants.WeatherClient, :ok},
+      {PlantsServer.DNS, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -7,10 +7,14 @@ defmodule WeatherServer.Application do
 
   def start(_type, _args) do
     # List all child processes to be supervised
+    hostname = WeatherServer.get_address()
+             |> Tuple.to_list
+             |> Enum.join(".")
     children = [
       # Starts a worker by calling: WeatherServer.Worker.start_link(arg)
       # {WeatherServer.Worker, arg},
-      {WeatherServer, []}
+      {WeatherServer, []},
+      {WeatherZMQ, [hostname, 8700]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

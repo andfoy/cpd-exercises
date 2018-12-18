@@ -1,4 +1,4 @@
-defmodule PlantsServer do
+defmodule PlantsServer.DNS do
   use GenServer
 
   defp get_address() do
@@ -31,18 +31,28 @@ defmodule PlantsServer do
   end
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, [%{:weather => nil}], name: :plants)
+    GenServer.start_link(__MODULE__, [%{:weather => nil}], name: :plants_dns)
   end
 
   defp recieve_scan_responses do
     receive do
-      {:"_weather._tcp.local", msg} ->
-        :logger.debug("msg: #{inspect(msg)}")
+      {:"_weather._tcp.local",
+       %Mdns.Client.Device{:ip => ip, :payload => %{"id" => "weather", "port" => port}}} ->
+        {port, ""} = Integer.parse(port)
+        ip = Tuple.to_list(ip)
+          |> Enum.join(".")
+        :logger.debug("payload: #{inspect(port)}, IP: #{inspect(ip)}")
+        try do
+          Plants.WeatherClient.start_socket(ip, port)
+        catch
+          {:exit, _} -> :ups
+        end
         # code
     after
       1_000 -> :nothing
     end
-    Process.sleep(2000)
+
+    Process.sleep(10000)
     Mdns.Client.query("_weather._tcp.local")
     recieve_scan_responses()
   end
@@ -51,8 +61,9 @@ defmodule PlantsServer do
     :logger.debug("PID: #{inspect(self())}")
     # Mdns.EventManager.register()
     Mdns.EventManager.add_handler()
+
     receive do
-      {:scan, pid} -> send pid, {:ready, :ok}
+      {:scan, pid} -> send(pid, {:ready, :ok})
     end
 
     # Mdns.Client.query("_plants._tcp.local")
@@ -80,7 +91,7 @@ defmodule PlantsServer do
 
     Mdns.Server.add_service(%Mdns.Server.Service{
       domain: "_plants._tcp.local",
-      data: ["id=123123", "port=8800"],
+      data: ["id=plants", "port=8800"],
       ttl: 10,
       type: :txt
     })
@@ -92,7 +103,8 @@ defmodule PlantsServer do
       type: :a
     })
 
-    send task.pid, {:scan, self()}
+    send(task.pid, {:scan, self()})
+
     receive do
       {:ready, :ok} -> :ok
     end

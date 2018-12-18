@@ -1,8 +1,9 @@
 {application,plants_server,
-             [{applications,[kernel,stdlib,elixir,logger]},
+             [{applications,[kernel,stdlib,elixir,logger,mdns,chumak,msgpack]},
               {description,"plants_server"},
-              {modules,['Elixir.PlantsServer',
-                        'Elixir.PlantsServer.Application']},
+              {modules,['Elixir.Plants.WeatherClient',
+                        'Elixir.PlantsServer.Application',
+                        'Elixir.PlantsServer.DNS']},
               {registered,[]},
               {vsn,"0.1.0"},
               {mod,{'Elixir.PlantsServer.Application',[]}}]}.

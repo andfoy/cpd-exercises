@@ -1,7 +1,7 @@
 defmodule WeatherServer do
   use GenServer
 
-  defp get_address() do
+  def get_address() do
     :inet.getifaddrs()
     |> elem(1)
     |> Enum.reduce_while({}, fn {_interface, attr}, acc ->
@@ -38,11 +38,13 @@ defmodule WeatherServer do
     receive do
       {:"_plants._tcp.local", msg} ->
         :logger.debug("msg: #{inspect(msg)}")
+
         # code
     after
       1_000 -> :nothing
     end
-    Process.sleep(2000)
+
+    Process.sleep(10000)
     Mdns.Client.query("_plants._tcp.local")
     recieve_scan_responses()
   end
@@ -51,8 +53,9 @@ defmodule WeatherServer do
     :logger.debug("PID: #{inspect(self())}")
     # Mdns.EventManager.register()
     Mdns.EventManager.add_handler()
+
     receive do
-      {:scan, pid} -> send pid, {:ready, :ok}
+      {:scan, pid} -> send(pid, {:ready, :ok})
     end
 
     # Mdns.Client.query("_plants._tcp.local")
@@ -80,7 +83,10 @@ defmodule WeatherServer do
 
     Mdns.Server.add_service(%Mdns.Server.Service{
       domain: "_weather._tcp.local",
-      data: ["id=5865", "port=8700"],
+      data: [
+        "id=weather",
+        "port=8700",
+      ],
       ttl: 10,
       type: :txt
     })
@@ -92,7 +98,8 @@ defmodule WeatherServer do
       type: :a
     })
 
-    send task.pid, {:scan, self()}
+    send(task.pid, {:scan, self()})
+
     receive do
       {:ready, :ok} -> :ok
     end
