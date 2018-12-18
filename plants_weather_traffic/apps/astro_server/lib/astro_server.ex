@@ -1,4 +1,4 @@
-defmodule WeatherServer do
+defmodule AstroServer do
   use GenServer
 
   def get_address() do
@@ -36,21 +36,8 @@ defmodule WeatherServer do
 
   defp recieve_scan_responses do
     receive do
-      {:"_astro._tcp.local",
-       %Mdns.Client.Device{:ip => ip, :payload => %{"id" => "astro", "port" => port}}} ->
-        {port, ""} = Integer.parse(port)
-
-        ip =
-          Tuple.to_list(ip)
-          |> Enum.join(".")
-
-        :logger.debug("payload: #{inspect(port)}, IP: #{inspect(ip)}")
-
-        try do
-          Weather.AstroClient.start_socket(ip, port)
-        catch
-          {:exit, _} -> :ups
-        end
+      {:"_plants._tcp.local", msg} ->
+        :logger.debug("msg: #{inspect(msg)}")
 
         # code
     after
@@ -58,7 +45,7 @@ defmodule WeatherServer do
     end
 
     Process.sleep(10000)
-    Mdns.Client.query("_astro._tcp.local")
+    Mdns.Client.query("_plants._tcp.local")
     recieve_scan_responses()
   end
 
@@ -71,8 +58,8 @@ defmodule WeatherServer do
       {:scan, pid} -> send(pid, {:ready, :ok})
     end
 
-    # Mdns.Client.query("_astro._tcp.local")
-    Mdns.Client.query("_astro._tcp.local")
+    # Mdns.Client.query("_plants._tcp.local")
+    Mdns.Client.query("_plants._tcp.local")
     # Mdns.Client.query("_ssh._tcp.local")
     recieve_scan_responses()
   end
@@ -84,21 +71,21 @@ defmodule WeatherServer do
     Application.ensure_all_started(Mdns.Server)
     Mdns.Server.start()
     Mdns.Client.start()
-    task = Task.async(fn -> start_mdns_scan() end)
+    # task = Task.async(fn -> start_mdns_scan() end)
     Mdns.Server.set_ip(address)
 
     Mdns.Server.add_service(%Mdns.Server.Service{
-      domain: "_weather._tcp.local",
-      data: "_weather._tcp.local",
+      domain: "_astro._tcp.local",
+      data: "_astro._tcp.local",
       ttl: 10,
       type: :ptr
     })
 
     Mdns.Server.add_service(%Mdns.Server.Service{
-      domain: "_weather._tcp.local",
+      domain: "_astro._tcp.local",
       data: [
-        "id=weather",
-        "port=8700"
+        "id=astro",
+        "port=8600",
       ],
       ttl: 10,
       type: :txt
@@ -111,16 +98,16 @@ defmodule WeatherServer do
       type: :a
     })
 
-    send(task.pid, {:scan, self()})
+    # send(task.pid, {:scan, self()})
 
-    receive do
-      {:ready, :ok} -> :ok
-    end
+    # receive do
+    #   {:ready, :ok} -> :ok
+    # end
 
-    char_host = "machine.local" |> String.to_charlist()
-    lookup = :inet.gethostbyname(char_host, :inet)
-    :logger.debug("Lookup #{inspect(lookup)}")
-    {:ok, {:hostent, ^char_host, [], :inet, 4, [^address]}} = lookup
+    # char_host = "machine.local" |> String.to_charlist()
+    # lookup = :inet.gethostbyname(char_host, :inet)
+    # :logger.debug("Lookup #{inspect(lookup)}")
+    # {:ok, {:hostent, ^char_host, [], :inet, 4, [^address]}} = lookup
     {:ok, services}
   end
 end

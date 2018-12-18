@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :traffic_server, key: :value
+#     config :astro_server, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:traffic_server, :key)
+#     Application.get_env(:astro_server, :key)
 #
 # You can also configure a 3rd-party app:
 #

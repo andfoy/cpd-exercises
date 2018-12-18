@@ -1,4 +1,4 @@
-defmodule WeatherZMQ do
+defmodule AstroZMQ do
   use Agent
 
   def start_link(args) do
@@ -7,7 +7,7 @@ defmodule WeatherZMQ do
   end
 
   def init(ip, port) do
-    {:ok, socket} = :chumak.socket(:rep, "weather-rep" |> String.to_charlist())
+    {:ok, socket} = :chumak.socket(:rep, "astro-rep" |> String.to_charlist())
 
     case :chumak.bind(socket, :tcp, ip |> String.to_charlist(), port) do
       {:ok, _} ->
@@ -33,7 +33,7 @@ defmodule WeatherZMQ do
 
   defp process_req(%{"get_service_info" => "get_service_info"}) do
     %{
-      "all_info" => %{
+      "moon_phase" => %{
         "input" => %{
           "position" => %{
             "lat" => "number",
@@ -41,33 +41,16 @@ defmodule WeatherZMQ do
           }
         },
         "output" => %{
-          "temperature" => "number",
-          "humidity" => "number",
-          "air_speed" => "number",
-          "oxygen_sat" => "number",
           "moon_phase" => "string"
         }
       }
     }
   end
 
-  defp process_req(%{"all_info" => %{"position" => position}}) do
+  defp process_req(%{"moon_phase" => %{"position" => position}}) do
     :logger.debug("I should do something with the position here #{inspect(position)}")
-    moon_phase = case Weather.AstroClient.alive() do
-      :true ->
-        :logger.debug("Astro service is alive")
-        resp = Weather.AstroClient.request(:moon_phase, %{"position" => position})
-        Map.get(resp, "moon_phase")
-      :false -> ""
-    end
-
     %{
-      "all_info" => %{
-        "temperature" => 30,
-        "humidity" => 20,
-        "air_speed" => 10,
-        "moon_phase" => moon_phase
-      }
+      "moon_phase" => "full"
     }
   end
 end

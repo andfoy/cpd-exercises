@@ -13,6 +13,7 @@ defmodule WeatherServer.Application do
     children = [
       # Starts a worker by calling: WeatherServer.Worker.start_link(arg)
       # {WeatherServer.Worker, arg},
+      {Weather.AstroClient, :ok},
       {WeatherServer, []},
       {WeatherZMQ, [hostname, 8700]}
     ]
